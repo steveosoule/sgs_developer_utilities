@@ -14,12 +14,18 @@
 
 	<MvASSIGN NAME = "l.xml" VALUE = "{ '' }">
 
+	<MvASSIGN NAME = "l.parent_tag_slug" VALUE = "{ glosub(slugify(l.parent_tag), '-', '_') }">
+
 	<MvCOMMENT>
 		| Members/Keys/Associate Arrays
 	</MvCOMMENT>
 	<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.data, l.members ) }">
 	<MvIF EXPR = "{ l.member_count GT 0 }">
-		<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<' $ l.parent_tag $ '>' }">
+		<MvIF EXPR = "{ l.parent_tag NE l.parent_tag_slug OR isdigit(l.parent_tag) }">
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<item name=\"' $ l.parent_tag $ '\">' }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<' $ l.parent_tag $ '>' }">
+		</MvIF>
 			<MvFOREACH INDEX = "l.pos" ITERATOR = "l.member" ARRAY = "l.members" COUNT = "{ l.member_count }">
 				<MvREFERENCEARRAY NAME = "l.member_value" VARIABLE = "l.data">
 					<MvMEMBER NAME = "{ l.member }">
@@ -33,7 +39,11 @@
 					<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</' $ l.member $ '>' }">
 				</MvIF>
 			</MvFOREACH>
-		<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</' $ l.parent_tag $ '>' }">
+		<MvIF EXPR = "{ l.parent_tag NE l.parent_tag_slug OR isdigit(l.parent_tag) }">
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</item>' }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</' $ l.parent_tag $ '>' }">
+		</MvIF>
 		<MvFUNCTIONRETURN VALUE = "{ l.xml }">
 	</MvIF>
 
