@@ -10,21 +10,51 @@
 	<MvASSIGN NAME = "l.module:description"	VALUE = "A Miva module with a set of helper functions to make development easier. Visit http://stevensoule.com/sgs_developer_utilities for more information.">
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "XML_Element_Name_Is_Valid" PARAMETERS = "tag_name var" STANDARDOUTPUTLEVEL = "">
+	<MvWHILE EXPR = "{ l.counter LT len(l.tag_name) }">
+
+		<MvASSIGN NAME = "l.counter" VALUE = "{ l.counter + 1}" />
+		<MvASSIGN NAME = "l.character" VALUE = "{ substring(l.tag_name, l.counter, 1) }" />
+
+		<MvIF EXPR ="{ l.counter EQ 1 }">
+			<MvIF EXPR = "{ isalpha(l.character) OR l.character EQ '_' }">
+				<MvCOMMENT><!-- First character is ok --></MvCOMMENT>
+			<MvELSE>
+				<MvFUNCTIONRETURN VALUE = "0">
+				<MvWHILESTOP/>
+			</MvIF>
+		</MvIF>
+
+		<MvIF EXPR ="{ isalnum(l.character) OR l.character EQ '-' OR l.character EQ '_' OR l.character EQ '.' }">
+			<MvCOMMENT><!-- Character is ok --></MvCOMMENT>
+		<MvELSE>
+			<MvFUNCTIONRETURN VALUE = "0">
+			<MvWHILESTOP/>
+		</MvIF>
+
+	</MvWHILE>
+
+	<MvFUNCTIONRETURN VALUE = "1">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "XML_Stringify" PARAMETERS = "data var, parent_tag" STANDARDOUTPUTLEVEL = "">
 
 	<MvASSIGN NAME = "l.xml" VALUE = "{ '' }">
 
-	<MvASSIGN NAME = "l.parent_tag_slug" VALUE = "{ glosub(slugify(l.parent_tag), '-', '_') }">
+
+	<MvASSIGN NAME = "l.parent_tag_is_valid" VALUE = "{ XML_Element_Name_Is_Valid(l.parent_tag) }" />
 
 	<MvCOMMENT>
-		| Members/Keys/Associate Arrays
+		<!--
+			Members/Keys/Associate Arrays
+		-->
 	</MvCOMMENT>
 	<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.data, l.members ) }">
 	<MvIF EXPR = "{ l.member_count GT 0 }">
-		<MvIF EXPR = "{ l.parent_tag NE l.parent_tag_slug OR isdigit(l.parent_tag) }">
-			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<item name=\"' $ l.parent_tag $ '\">' }">
-		<MvELSE>
+		<MvIF EXPR = "{ l.parent_tag_is_valid }">
 			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<' $ l.parent_tag $ '>' }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<item name=\"' $ encodeentities(l.parent_tag) $ '\">' }">
 		</MvIF>
 			<MvFOREACH INDEX = "l.pos" ITERATOR = "l.member" ARRAY = "l.members" COUNT = "{ l.member_count }">
 				<MvREFERENCEARRAY NAME = "l.member_value" VARIABLE = "l.data">
@@ -39,17 +69,19 @@
 					<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</' $ l.member $ '>' }">
 				</MvIF>
 			</MvFOREACH>
-		<MvIF EXPR = "{ l.parent_tag NE l.parent_tag_slug OR isdigit(l.parent_tag) }">
-			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</item>' }">
-		<MvELSE>
+		<MvIF EXPR = "{ l.parent_tag_is_valid }">
 			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</' $ l.parent_tag $ '>' }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '</item>' }">
 		</MvIF>
 		<MvFUNCTIONRETURN VALUE = "{ l.xml }">
 	</MvIF>
 
 
 	<MvCOMMENT>
-		| Index Based Arrays
+		<!--
+			Index Based Arrays
+		-->
 	</MvCOMMENT>
 	<MvASSIGN NAME = "l.element_count"	VALUE = "{ miva_array_elements( l.data ) }">
 	<MvIF EXPR = "{ l.element_count GT 0 }">
@@ -66,7 +98,9 @@
 
 
 	<MvCOMMENT>
-		| Content/Value
+		<!--
+			Content/Value
+		-->
 	</MvCOMMENT>
 	<MvFUNCTIONRETURN VALUE = "{ encodeentities(l.data) }">
 
@@ -83,7 +117,9 @@
 	<MvASSIGN NAME = "l.json" VALUE = "{ '' }">
 
 	<MvCOMMENT>
-		| Members/Keys/Associate Arrays
+		<!--
+			Members/Keys/Associate Arrays
+		-->
 	</MvCOMMENT>
 	<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.data, l.members ) }">
 	<MvIF EXPR = "{ l.member_count GT 0 }">
@@ -105,7 +141,9 @@
 	</MvIF>
 
 	<MvCOMMENT>
-		| Index Based Arrays
+		<!--
+			Index Based Arrays
+		-->
 	</MvCOMMENT>
 	<MvASSIGN NAME = "l.element_count"	VALUE = "{ miva_array_elements( l.data ) }">
 	<MvIF EXPR = "{ l.element_count GT 0 }">
@@ -123,7 +161,9 @@
 	</MvIF>
 
 	<MvCOMMENT>
-		| Content/Value
+		<!--
+			Content/Value
+		-->
 	</MvCOMMENT>
 	<MvIF EXPR = "{ isdigit( l.data ) 	AND
 					NOT ISNULL l.data	AND
