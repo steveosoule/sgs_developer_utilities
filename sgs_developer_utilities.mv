@@ -1,17 +1,17 @@
 <MIVA STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL=""><MvEXIT>
 
 <MvFUNCTION NAME = "Module_Description" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.module:code"	VALUE = "sgs_developer_utilities">
-	<MvASSIGN NAME = "l.module:name"	VALUE = "SGS: Developer Utilities">
-	<MvASSIGN NAME = "l.module:provider"	VALUE = "Steven G. Soule (ssoule@miva.com)">
-	<MvASSIGN NAME = "l.module:version"	VALUE = "1.1.1">
-	<MvASSIGN NAME = "l.module:api_ver"	VALUE = "5.21">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "util">
-	<MvASSIGN NAME = "l.module:description"	VALUE = "A Miva module with a set of helper functions to make development easier. Visit http://stevensoule.com/sgs_developer_utilities for more information.">
+	<MvASSIGN NAME = "l.module:code" VALUE = "sgs_developer_utilities">
+	<MvASSIGN NAME = "l.module:name" VALUE = "SGS: Developer Utilities">
+	<MvASSIGN NAME = "l.module:provider" VALUE = "Steven G. Soule (ssoule@miva.com)">
+	<MvASSIGN NAME = "l.module:version" VALUE = "1.1.2">
+	<MvASSIGN NAME = "l.module:api_ver" VALUE = "5.21">
+	<MvASSIGN NAME = "l.module:features" VALUE = "util">
+	<MvASSIGN NAME = "l.module:description" VALUE = "A Miva module with a set of helper functions to make development easier. Visit https://github.com/steveosoule/sgs_developer_utilities for more information.">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "XML_Element_Name_Is_Valid" PARAMETERS = "tag_name var" STANDARDOUTPUTLEVEL = "">
-	<MvWHILE EXPR = "{ l.counter LT len(l.tag_name) }">
+	<MvWHILE EXPR = "{ l.counter LT len_var(l.tag_name) }">
 
 		<MvASSIGN NAME = "l.counter" VALUE = "{ l.counter + 1}" />
 		<MvASSIGN NAME = "l.character" VALUE = "{ substring(l.tag_name, l.counter, 1) }" />
@@ -49,7 +49,7 @@
 			Members/Keys/Associate Arrays
 		-->
 	</MvCOMMENT>
-	<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.data, l.members ) }">
+	<MvASSIGN NAME = "l.member_count" VALUE = "{ miva_struct_members( l.data, l.members ) }">
 	<MvIF EXPR = "{ l.member_count GT 0 }">
 		<MvIF EXPR = "{ l.parent_tag_is_valid }">
 			<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<' $ l.parent_tag $ '>' }">
@@ -83,10 +83,10 @@
 			Index Based Arrays
 		-->
 	</MvCOMMENT>
-	<MvASSIGN NAME = "l.element_count"	VALUE = "{ miva_array_elements( l.data ) }">
+	<MvASSIGN NAME = "l.element_count" VALUE = "{ miva_array_elements( l.data ) }">
 	<MvIF EXPR = "{ l.element_count GT 0 }">
 		<MvFOREACH INDEX = "l.pos" ITERATOR = "l.element" ARRAY = "l.data" COUNT = "{ l.element_count }">
-			<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.element, l.members ) }">
+			<MvASSIGN NAME = "l.member_count" VALUE = "{ miva_struct_members( l.element, l.members ) }">
 			<MvIF EXPR = "{ l.member_count EQ 0 }">
 				<MvASSIGN NAME = "l.xml" VALUE = "{ l.xml $ '<' $ l.parent_tag $ '>' $ encodeentities(l.element) $ '</' $ l.parent_tag $ '>' }">
 			<MvELSE>
@@ -121,7 +121,7 @@
 			Members/Keys/Associate Arrays
 		-->
 	</MvCOMMENT>
-	<MvASSIGN NAME = "l.member_count"	VALUE = "{ miva_struct_members( l.data, l.members ) }">
+	<MvASSIGN NAME = "l.member_count" VALUE = "{ miva_struct_members( l.data, l.members ) }">
 	<MvIF EXPR = "{ l.member_count GT 0 }">
 		<MvASSIGN NAME = "l.json" VALUE = "{ l.json $ '{' }">
 			<MvFOREACH INDEX = "l.pos" ITERATOR = "l.member" ARRAY = "l.members" COUNT = "{ l.member_count }">
@@ -145,7 +145,7 @@
 			Index Based Arrays
 		-->
 	</MvCOMMENT>
-	<MvASSIGN NAME = "l.element_count"	VALUE = "{ miva_array_elements( l.data ) }">
+	<MvASSIGN NAME = "l.element_count" VALUE = "{ miva_array_elements( l.data ) }">
 	<MvIF EXPR = "{ l.element_count GT 0 }">
 		<MvASSIGN NAME = "l.json" VALUE = "{ l.json $ '[' }">
 		<MvFOREACH INDEX = "l.pos" ITERATOR = "l.element" ARRAY = "l.data" COUNT = "{ l.element_count }">
@@ -165,9 +165,7 @@
 			Content/Value
 		-->
 	</MvCOMMENT>
-	<MvIF EXPR = "{ isdigit( l.data ) 	AND
-					NOT ISNULL l.data	AND
-					NOT ( len_var( l.data ) GE 2 AND substring_var( l.data, 1, 1 ) EQ '0' ) }">
+	<MvIF EXPR = "{ JSON_Value_Is_Numeric(l.data) }">
 		<MvFUNCTIONRETURN VALUE = "{ l.json $ l.data }">
 	<MvELSE>
 		<MvFUNCTIONRETURN VALUE = "{ l.json $ '"' $ encodejavascriptstring( l.data ) $ '"' }">
@@ -176,4 +174,119 @@
 
 <MvFUNCTION NAME = "JSON_Output" PARAMETERS = "data" STANDARDOUTPUTLEVEL = "">
 	<MvEVAL EXPR = "{ JSON_Stringify(l.data) }" />
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "JSON_Value_Is_Numeric" PARAMETERS = "value" STANDARDOUTPUTLEVEL = "">
+
+	<MvASSIGN NAME = "l.jvin:valid"  VALUE = 1>
+	<MvASSIGN NAME = "l.jvin:pos"    VALUE = 1>
+	<MvASSIGN NAME = "l.jvin:value"  VALUE = "{ tolower(l.value) }">
+	<MvASSIGN NAME = "l.jvin:len"    VALUE = "{ len_var( l.jvin:value ) }">
+
+
+	<MvIF EXPR = "{ ISNULL l.jvin:value }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_1" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+
+
+	<MvASSIGN NAME = "l.jvin:is_negative" VALUE = "{ ('-' IN l.jvin:value) EQ 1 }">
+	<MvIF EXPR = "{ l.jvin:is_negative }">
+		<MvASSIGN NAME = "l.jvin:pos_sign" VALUE = "1">
+	<MvELSE>
+		<MvASSIGN NAME = "l.jvin:pos_sign" VALUE = "0">
+	</MvIF>
+	<MvASSIGN NAME = "l.jvin:pos_decimal" VALUE = "{ '.' IN l.jvin:value }">
+	<MvASSIGN NAME = "l.jvin:pos_exponent" VALUE = "{ 'e' IN l.jvin:value }">
+	<MvASSIGN NAME = "l.jvin:pos_exponent_sign_positive" VALUE = "{ 'e+' IN l.jvin:value }">
+	<MvASSIGN NAME = "l.jvin:pos_exponent_sign_negative" VALUE = "{ 'e-' IN l.jvin:value }">
+
+
+	<MvCOMMENT>
+		| Nagative Sign
+	</MvCOMMENT>
+	<MvASSIGN NAME = "l.jvin:part_1_sign" VALUE = "{ substring(l.jvin:value, 1, l.jvin:pos_sign) }">
+
+	<MvCOMMENT>
+		| Integer
+	</MvCOMMENT>
+	<MvIF EXPR = "{ l.jvin:pos_decimal }">
+		<MvASSIGN NAME = "l.jvin:pos_integer_max" VALUE = "{ l.jvin:pos_decimal - 1 }">
+	<MvELSEIF EXPR = "{ l.jvin:pos_exponent }">
+		<MvASSIGN NAME = "l.jvin:pos_integer_max" VALUE = "{ l.jvin:pos_exponent - 1 }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.jvin:pos_integer_max" VALUE = "{ l.jvin:len }">
+	</MvIF>
+	<MvASSIGN NAME = "l.jvin:pos_integer_max" VALUE = "{ l.jvin:pos_integer_max - l.jvin:pos_sign }">
+	<MvASSIGN NAME = "l.jvin:part_2_integer" VALUE = "{ substring(l.jvin:value, l.jvin:pos_sign + 1, l.jvin:pos_integer_max) }">
+
+	<MvCOMMENT>
+		| Decimal
+	</MvCOMMENT>
+	<MvIF EXPR = "{ l.jvin:pos_decimal }">
+		<MvIF EXPR = "{ l.jvin:pos_exponent }">
+			<MvASSIGN NAME = "l.jvin:pos_decimal_max" VALUE = "{ l.jvin:pos_exponent - 1 - l.jvin:pos_decimal}">
+		<MvELSE>
+			<MvASSIGN NAME = "l.jvin:pos_decimal_max" VALUE = "{ l.jvin:len - l.jvin:pos_decimal }">
+		</MvIF>
+		<MvASSIGN NAME = "l.jvin:part_3_decimal" VALUE = ".">
+		<MvASSIGN NAME = "l.jvin:part_4_decimal_digits" VALUE = "{ substring(l.jvin:value, l.jvin:pos_decimal + 1, l.jvin:pos_decimal_max) }">
+	</MvIF>
+
+	<MvCOMMENT>
+		| Exponent
+	</MvCOMMENT>
+	<MvIF EXPR = "{ l.jvin:pos_exponent_sign_negative }">
+		<MvASSIGN NAME = "l.jvin:part_5_exponent" VALUE = "e-">
+		<MvASSIGN NAME = "l.jvin:part_6_exponent_digits" VALUE = "{ substring(l.jvin:value, l.jvin:pos_exponent_sign_negative + 2, l.jvin:len) }">
+	<MvELSEIF EXPR = "{ l.jvin:pos_exponent_sign_positive }">
+		<MvASSIGN NAME = "l.jvin:part_5_exponent" VALUE = "e+">
+		<MvASSIGN NAME = "l.jvin:part_6_exponent_digits" VALUE = "{ substring(l.jvin:value, l.jvin:pos_exponent_sign_positive + 2, l.jvin:len) }">
+	<MvELSEIF EXPR = "{ l.jvin:pos_exponent }">
+		<MvASSIGN NAME = "l.jvin:part_5_exponent" VALUE = "e">
+		<MvASSIGN NAME = "l.jvin:part_6_exponent_digits" VALUE = "{ substring(l.jvin:value, l.jvin:pos_exponent + 1, l.jvin:len) }">
+	</MvIF>
+
+
+	<MvCOMMENT>
+		| Conclusions
+	</MvCOMMENT>
+	<MvIF EXPR = "{ ISNULL l.jvin:part_2_integer OR NOT isdigit(l.jvin:part_2_integer) }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_2" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvIF EXPR = "{ NOT ISNULL l.jvin:part_4_decimal_digits AND NOT isdigit(l.jvin:part_4_decimal_digits) }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_3" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvIF EXPR = "{ NOT ISNULL l.jvin:part_6_exponent_digits AND NOT isdigit(l.jvin:part_6_exponent_digits) }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_4" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvIF EXPR = "{ l.jvin:part_2_integer EQ 0 AND len_var(l.jvin:part_2_integer) GT 1 }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_5" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvIF EXPR = "{ len_var(l.jvin:part_2_integer) GT 1 AND ('0' IN l.jvin:part_2_integer EQ 1)  }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_6" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvIF EXPR = "{ NOT ISNULL l.jvin:part_5_exponent AND ISNULL l.jvin:part_6_exponent_digits }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_7" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+	<MvASSIGN NAME = "l.jvin:parsed_parts" VALUE = "{ l.jvin:part_1_sign $ l.jvin:part_2_integer $ l.jvin:part_3_decimal $ l.jvin:part_4_decimal_digits $ l.jvin:part_5_exponent $ l.jvin:part_6_exponent_digits }" />
+	<MvIF EXPR = "{ l.jvin:parsed_parts NE l.jvin:value }">
+		<MvASSIGN NAME = "l.jvin:invalidated_at_8" VALUE = 1>
+		<MvASSIGN NAME = "l.jvin:valid" VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.JSON_Value_Is_Numeric_Debug }">
+		<MvEVAL EXPR = "{ '<h2>' $ l.jvin:value $ '</h2>' }">
+		<MvEVAL EXPR = "{ glosub(miva_array_serialize(l.jvin), ',', '<br>') $ '<br><br>' }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ l.jvin:valid }">
+
 </MvFUNCTION>
