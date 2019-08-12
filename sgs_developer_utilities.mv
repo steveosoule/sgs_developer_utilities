@@ -4,10 +4,27 @@
 	<MvASSIGN NAME = "l.module:code" VALUE = "sgs_developer_utilities">
 	<MvASSIGN NAME = "l.module:name" VALUE = "SGS: Developer Utilities">
 	<MvASSIGN NAME = "l.module:provider" VALUE = "Steven G. Soule (ssoule@miva.com)">
-	<MvASSIGN NAME = "l.module:version" VALUE = "1.1.2">
+	<MvASSIGN NAME = "l.module:version" VALUE = "1.1.3">
 	<MvASSIGN NAME = "l.module:api_ver" VALUE = "5.21">
 	<MvASSIGN NAME = "l.module:features" VALUE = "util">
 	<MvASSIGN NAME = "l.module:description" VALUE = "A Miva module with a set of helper functions to make development easier. Visit https://github.com/steveosoule/sgs_developer_utilities for more information.">
+</MvFUNCTION>
+
+<MvCOMMENT> util </MvCOMMENT>
+<MvFUNCTION NAME = "StoreUtilityModule_Action" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_LeftNavigation" PARAMETERS = "module var, indent" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "XML_Element_Name_Is_Valid" PARAMETERS = "tag_name var" STANDARDOUTPUTLEVEL = "">
